@@ -11,7 +11,7 @@
     "test": "echo \"Adding tests later :)\"",
     "start": "ts-node src/index.ts",
     "prepare": "npm run build",
-    "build": "tsup-node",
+    "build": "rimraf dist && tsc",
     "analyze": "source-map-explorer dist/index.js"
   },
   "bin": {
@@ -36,9 +36,9 @@
     "eslint-plugin-prettier": "^4.0.0",
     "glob": "^8.0.3",
     "jsonschema": "^1.4.1",
+    "rimraf": "^3.0.2",
     "source-map-explorer": "^2.5.2",
     "ts-node": "^10.8.0",
-    "tsup": "^6.0.1",
     "typescript": "^4.7.2"
   }
 }
