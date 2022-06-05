@@ -8,6 +8,7 @@
     "bin"
   ],
   "scripts": {
+    "test": "echo \"Adding tests later :)\"",
     "start": "ts-node src/index.ts",
     "prepare": "npm run build",
     "build": "tsup-node",
