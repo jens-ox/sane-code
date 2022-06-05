@@ -1,3 +1,3 @@
-# Clean Repo
+# Sane Code
 
-`npx clean-repo`
+`npx sane-code`

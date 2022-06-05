@@ -1,5 +1,5 @@
 {
-  "name": "clean-repo",
+  "name": "sane-code",
   "version": "0.0.1",
   "description": "Analyze a git repository for common mistakes",
   "main": "dist/index.js",
@@ -14,15 +14,15 @@
     "analyze": "source-map-explorer dist/index.js"
   },
   "bin": {
-    "clean-repo": "bin/index.js"
+    "sane-code": "bin/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jens-ox/clean-repo.git"
+    "url": "git+https://github.com/jens-ox/sane-code.git"
   },
   "author": "Jens Ochsenmeier <github@jens-ox.de>",
   "license": "MIT",
-  "homepage": "https://github.com/jens-ox/clean-repo#readme",
+  "homepage": "https://github.com/jens-ox/sane-code#readme",
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/node": "^17.0.38",
