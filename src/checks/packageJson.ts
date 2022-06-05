@@ -28,13 +28,9 @@ const analyze = async (content: string): Promise<Array<string>> => {
   const jsonResult = await validatePackageJson(data)
   errors.push(...jsonResult.errors.map((e) => chalk.red(e.stack)))
 
-  // check obligatory fields
-  if (!data.name) {
-    errors.push(chalk.red('obligatory name field not set'))
-  }
-  if (!data.version) {
-    errors.push(chalk.red('obligatory version field not set'))
-  }
+  // check fields
+  if (!data.name) errors.push(chalk.yellow('name field not set'))
+  if (!data.version) errors.push(chalk.yellow('version field not set'))
 
   // check if name follows the "simple" format of NPM
   const nameIsSimple = !data.name || /^[a-z-_]+$/.test(data.name)
@@ -59,7 +55,7 @@ const analyze = async (content: string): Promise<Array<string>> => {
   return errors
 }
 
-const main = async () => {
+const packageJsonChecker = async () => {
   const results = (await glob('./**/package.json', {
     ignore: './node_modules/**/*'
   })) as Array<string>
@@ -82,4 +78,4 @@ const main = async () => {
   }
 }
 
-export default main
+export default packageJsonChecker
