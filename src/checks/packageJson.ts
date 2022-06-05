@@ -52,6 +52,38 @@ const analyze = async (content: string): Promise<Array<string>> => {
     )
   }
 
+  // check if @types are installed as dependencies
+  const hasTypesInDependencies = Object.keys(data.dependencies).some((key) => key.includes('@types'))
+  if (hasTypesInDependencies) {
+    errors.push(
+      chalk.yellow(
+        'Some type declaration dependencies are installed as regular dependencies. You can probably move them to devDepdendencies.'
+      )
+    )
+  }
+
+  // check if test command has been set up
+  const hasTestScript = Object.keys(data.scripts).includes('test')
+  if (!hasTestScript) {
+    errors.push(chalk.yellow('No test script set up'))
+  }
+
+  // check if dependencies are hard-pinned
+  const hasHardPinned = Object.values({ ...(data.devDepdendencies ?? {}), ...(data.dependencies ?? {}) }).some((key) =>
+    /^[0-9]/.test(key as string)
+  )
+  if (hasHardPinned) {
+    errors.push(
+      chalk.yellow(
+        'Some dependencies are hard-set to a version. This can have several downsides (further reading at https://www.the-guild.dev/blog/how-should-you-pin-dependencies-and-why). Consider allowing automatic non-breaking updates by using specifiers like ^x.y.z.'
+      )
+    )
+  }
+
+  // TODO check if deprecated packages are used
+  // TODO check if resolutions are forced
+  // TODO run npm-check-updates
+
   return errors
 }
 
@@ -61,8 +93,6 @@ const packageJsonChecker = async () => {
   })) as Array<string>
 
   // for each file, analyze
-  console.log(`found ${results.length} package.json files outside node_modules`)
-
   const errorMatrix = await Promise.all(
     results.map(async (file) => {
       const content = (await fs.readFile(file)).toString()
