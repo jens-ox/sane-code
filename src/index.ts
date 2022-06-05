@@ -18,16 +18,19 @@ export async function main() {
   const problems = [...(await packageJsonChecker()), ...(await lockfileChecker())]
 
   // group problems by file
-  const groupedProblems: Record<string, Array<Message>> = problems.reduce((acc, problem) => {
-    const key = problem.file ?? 'no-file'
-    acc[key] = acc[key] ? [...acc[key], problem] : [problem]
-    return acc
-  }, {})
+  const groupedProblems: Record<string, Array<Message>> = problems.reduce(
+    (acc, problem) => {
+      const key = problem.file ?? 'no-file'
+      acc[key] = acc[key] ? [...acc[key], problem] : [problem]
+      return acc
+    },
+    { 'no-file': [] }
+  )
 
   // echo problems
   for (const [file, errors] of Object.entries(groupedProblems)) {
     if (errors.length === 0) return
-    console.log(chalk.bold(file))
+    console.log(chalk.bold(file === 'no-file' ? 'General' : file))
     for (const error of errors) {
       console.log(printMessage(error))
     }
