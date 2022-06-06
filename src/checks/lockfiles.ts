@@ -6,13 +6,13 @@ import glob from '../utils/glob'
 const lockfileChecker: Checker = async () => {
   const errors: Array<Message> = []
   const npmLockfiles = await glob('./**/package-lock.json', {
-    ignore: './node_modules/**/*'
+    ignore: './**/node_modules/**/*'
   })
   const yarnLockfiles = await glob('./**/yarn.lock', {
-    ignore: './node_modules/**/*'
+    ignore: './**/node_modules/**/*'
   })
   const pnpmLockfiles = await glob('./**/pnpm-lock.yaml', {
-    ignore: './node_modules/**/*'
+    ignore: './**/node_modules/**/*'
   })
 
   const lockTypeCount = [npmLockfiles.length, yarnLockfiles.length, pnpmLockfiles.length].filter((e) => e > 0).length

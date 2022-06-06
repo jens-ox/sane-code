@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import lockfileChecker from './checks/lockfiles'
 import packageJsonChecker from './checks/packageJson'
+import tsconfigChecker from './checks/tsconfig'
 import { Level, Message } from './types'
 
 const printMessage = (message: Message): string => {
@@ -15,7 +16,7 @@ const printMessage = (message: Message): string => {
 }
 
 export async function main() {
-  const problems = [...(await packageJsonChecker()), ...(await lockfileChecker())]
+  const problems = [...(await packageJsonChecker()), ...(await lockfileChecker()), ...(await tsconfigChecker())]
 
   // group problems by file
   const groupedProblems: Record<string, Array<Message>> = problems.reduce(
@@ -45,6 +46,7 @@ export async function main() {
   // TODO check if codeowners is set up
   // TODO check if license (and package.json license field) is set up
   // TODO run ts-prune if typescript repo
+  // TODO check if README is set up (and contains something other than the default CRA README)
 }
 
 main()

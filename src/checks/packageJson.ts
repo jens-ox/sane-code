@@ -33,16 +33,22 @@ const analyze = async (content: string): Promise<Array<Message>> => {
   )
 
   // check fields
-  if (!data.name)
+  if (!data.name || data.name === '')
     errors.push({
       level: Level.WARN,
       message: 'name field not set'
     })
-  if (!data.version)
+  if (!data.version || data.version === '')
     errors.push({
       level: Level.WARN,
       message: 'version field not set'
     })
+  if (!data.author || data.author === '') {
+    errors.push({
+      level: Level.WARN,
+      message: 'no author set'
+    })
+  }
 
   // check if name follows the "simple" format of NPM
   const nameIsSimple = !data.name || /^[a-z-_]+$/.test(data.name)
@@ -104,7 +110,7 @@ const analyze = async (content: string): Promise<Array<Message>> => {
 
 const packageJsonChecker: Checker = async () => {
   const results = (await glob('./**/package.json', {
-    ignore: './node_modules/**/*'
+    ignore: './**/node_modules/**/*'
   })) as Array<string>
 
   // for each file, analyze
