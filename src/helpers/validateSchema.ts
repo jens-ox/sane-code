@@ -10,7 +10,7 @@ const makePreValidator =
     const value = object[key]
     if (typeof value === 'undefined') return
 
-    // get default value from schema
+    // get default value from schema if available
     const defaultValue = (schema as any).default
 
     // check if value matches default
@@ -52,22 +52,13 @@ const getValidator = async () => {
   return v
 }
 
-export const validatePackageJson = async (data: unknown): Promise<Array<Message>> => {
-  const v = await getValidator()
-  const result = v.validate(data, {
-    $ref: 'https://json.schemastore.org/package.json'
-  })
-
-  return result.errors.map((e) => ({ level: Level.ERROR, message: e.stack }))
-}
-
-export const validateTsconfigJson = async (data: unknown): Promise<Array<Message>> => {
+const validateSchema = async (data: unknown, schema: string): Promise<Array<Message>> => {
   const v = await getValidator()
   const unnecessaryDefaults: Array<Message> = []
   const result = v.validate(
     data,
     {
-      $ref: 'https://json.schemastore.org/tsconfig'
+      $ref: schema
     },
     {
       preValidateProperty: makePreValidator((defaultsMessage) => unnecessaryDefaults.push(defaultsMessage))
@@ -76,3 +67,12 @@ export const validateTsconfigJson = async (data: unknown): Promise<Array<Message
 
   return [...result.errors.map((e) => ({ level: Level.ERROR, message: e.stack })), ...unnecessaryDefaults]
 }
+
+export const validatePackageJson = async (data: unknown): Promise<Array<Message>> =>
+  validateSchema(data, 'https://json.schemastore.org/package.json')
+
+export const validateTsconfigJson = async (data: unknown): Promise<Array<Message>> =>
+  validateSchema(data, 'https://json.schemastore.org/tsconfig')
+
+export const validateEslint = async (data: unknown): Promise<Array<Message>> =>
+  validateSchema(data, 'https://json.schemastore.org/eslintrc.json')

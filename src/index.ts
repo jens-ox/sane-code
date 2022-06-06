@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import eslintChecker from './checks/eslint'
 import lockfileChecker from './checks/lockfiles'
 import packageJsonChecker from './checks/packageJson'
 import tsconfigChecker from './checks/tsconfig'
@@ -16,7 +17,12 @@ const printMessage = (message: Message): string => {
 }
 
 export async function main() {
-  const problems = [...(await packageJsonChecker()), ...(await lockfileChecker()), ...(await tsconfigChecker())]
+  const problems = [
+    ...(await packageJsonChecker()),
+    ...(await lockfileChecker()),
+    ...(await tsconfigChecker()),
+    ...(await eslintChecker())
+  ]
 
   // group problems by file
   const groupedProblems: Record<string, Array<Message>> = problems.reduce(
@@ -38,13 +44,10 @@ export async function main() {
     console.log('\n')
   }
 
-  // TODO run unimported
-  // TODO check if linting is set up
   // TODO check if pre-commit checks are set up
   // TODO check if GitHub on-push workflow is set up
   // TODO check if codeowners is set up
   // TODO check if license (and package.json license field) is set up
-  // TODO run ts-prune if typescript repo
   // TODO check if README is set up (and contains something other than the default CRA README)
 }
 
