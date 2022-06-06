@@ -1,6 +1,6 @@
 {
   "name": "sane-code",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Analyze a git repository for common mistakes",
   "main": "dist/index.js",
   "files": [
