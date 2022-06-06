@@ -21,12 +21,7 @@ const analyze = async (content: string): Promise<Array<Message>> => {
 
   // validate against tsconfig.json schema
   const jsonResult = await validateTsconfigJson(data)
-  errors.push(
-    ...jsonResult.errors.map((e) => ({
-      level: Level.ERROR,
-      message: e.stack
-    }))
-  )
+  errors.push(...jsonResult)
 
   // check for recommended tsconfig fields
   if (typeof data.compilerOptions.exactOptionalPropertyTypes === 'undefined')

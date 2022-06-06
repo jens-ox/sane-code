@@ -25,12 +25,7 @@ const analyze = async (content: string): Promise<Array<Message>> => {
 
   // validate against package.json schema
   const jsonResult = await validatePackageJson(data)
-  errors.push(
-    ...jsonResult.errors.map((e) => ({
-      level: Level.ERROR,
-      message: e.stack
-    }))
-  )
+  errors.push(...jsonResult)
 
   // check fields
   if (!data.name || data.name === '')

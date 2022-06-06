@@ -1,7 +1,25 @@
-import { Validator } from 'jsonschema'
+import { PreValidatePropertyFunction, Validator } from 'jsonschema'
 import axios from 'axios'
+import { Level, Message } from '../types'
 
 let validator: Validator
+
+const makePreValidator =
+  (feedback: (message: Message) => void): PreValidatePropertyFunction =>
+  (object, key, schema) => {
+    const value = object[key]
+    if (typeof value === 'undefined') return
+
+    // get default value from schema
+    const defaultValue = (schema as any).default
+
+    // check if value matches default
+    if (defaultValue === value)
+      feedback({
+        level: Level.WARN,
+        message: `value of "${key}" matches default (${defaultValue}) and may therefore be removed.`
+      })
+  }
 
 const getValidator = async () => {
   if (validator) return validator
@@ -34,16 +52,27 @@ const getValidator = async () => {
   return v
 }
 
-export const validatePackageJson = async (data: unknown) => {
+export const validatePackageJson = async (data: unknown): Promise<Array<Message>> => {
   const v = await getValidator()
-  return v.validate(data, {
+  const result = v.validate(data, {
     $ref: 'https://json.schemastore.org/package.json'
   })
+
+  return result.errors.map((e) => ({ level: Level.ERROR, message: e.stack }))
 }
 
-export const validateTsconfigJson = async (data: unknown) => {
+export const validateTsconfigJson = async (data: unknown): Promise<Array<Message>> => {
   const v = await getValidator()
-  return v.validate(data, {
-    $ref: 'https://json.schemastore.org/tsconfig'
-  })
+  const unnecessaryDefaults: Array<Message> = []
+  const result = v.validate(
+    data,
+    {
+      $ref: 'https://json.schemastore.org/tsconfig'
+    },
+    {
+      preValidateProperty: makePreValidator((defaultsMessage) => unnecessaryDefaults.push(defaultsMessage))
+    }
+  )
+
+  return [...result.errors.map((e) => ({ level: Level.ERROR, message: e.stack })), ...unnecessaryDefaults]
 }

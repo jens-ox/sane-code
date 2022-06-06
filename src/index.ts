@@ -39,7 +39,6 @@ export async function main() {
   }
 
   // TODO run unimported
-  // TODO check if typescript is set up
   // TODO check if linting is set up
   // TODO check if pre-commit checks are set up
   // TODO check if GitHub on-push workflow is set up
