@@ -3,15 +3,9 @@
  */
 
 import fs from 'fs/promises'
-import _glob from 'glob'
 import { validatePackageJson } from '../helpers/validateSchema'
 import { Checker, Level, Message } from '../types'
-
-const glob = function (pattern: string, options?: _glob.IOptions) {
-  return new Promise((resolve, reject) => {
-    _glob(pattern, options ?? {}, (err, files) => (err === null ? resolve(files) : reject(err)))
-  })
-}
+import glob from '../utils/glob'
 
 const analyze = async (content: string): Promise<Array<Message>> => {
   const errors: Array<Message> = []
@@ -116,7 +110,7 @@ const packageJsonChecker: Checker = async () => {
   // for each file, analyze
   const errorMatrix = await Promise.all(
     results.map(async (file) => {
-      const content = (await fs.readFile(file)).toString()
+      const content = await fs.readFile(file, 'utf-8')
       const errors = await analyze(content)
       return errors.map((error) => ({ ...error, file }))
     })

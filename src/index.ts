@@ -29,10 +29,10 @@ export async function main() {
 
   // echo problems
   for (const [file, errors] of Object.entries(groupedProblems)) {
-    if (errors.length === 0) return
+    if (errors.length === 0) continue
     console.log(chalk.bold(file === 'no-file' ? 'General' : file))
     for (const error of errors) {
-      console.log(printMessage(error))
+      console.log(`➜ ${printMessage(error)}`)
     }
     console.log('\n')
   }
