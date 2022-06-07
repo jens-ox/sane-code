@@ -96,7 +96,6 @@ const analyze = async (content: string): Promise<Array<Message>> => {
     })
   }
 
-  // TODO check if deprecated packages are used
   // TODO check if resolutions are forced
   // TODO run npm-check-updates
 
