@@ -66,7 +66,7 @@ const analyze = async (content: string): Promise<Array<Message>> => {
   }
 
   // check if @types are installed as dependencies
-  const hasTypesInDependencies = Object.keys(data.dependencies).some((key) => key.includes('@types'))
+  const hasTypesInDependencies = Object.keys(data.dependencies ?? {}).some((key) => key.includes('@types'))
   if (hasTypesInDependencies) {
     errors.push({
       level: Level.WARN,
