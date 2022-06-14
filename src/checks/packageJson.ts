@@ -108,6 +108,16 @@ const analyze = async (file: string): Promise<Array<Message>> => {
     })
   }
 
+  // subjective: Jest -> Vitest
+  const usesJest = Object.values(data.scripts ?? {}).some((s: any) => s.includes('jest'))
+  if (usesJest) {
+    errors.push({
+      level: Level.INFO,
+      message:
+        'It seems like Jest is used. Maybe check out Vitest for better performance and way better DX (see https://vitest.dev/guide/comparisons.html#jest).'
+    })
+  }
+
   return errors.map((e) => ({ ...e, file }))
 }
 
