@@ -32,14 +32,18 @@ const getValidator = async () => {
     { data: avaSchema },
     { data: semanticReleaseSchema },
     { data: prettierSchema },
-    { data: tsconfigSchema }
+    { data: tsconfigSchema },
+    { data: workflowSchema },
+    { data: stylelintSchema }
   ] = await Promise.all([
     axios.get('https://json.schemastore.org/package.json'),
     axios.get('https://json.schemastore.org/eslintrc.json'),
     axios.get('https://json.schemastore.org/ava.json'),
     axios.get('https://json.schemastore.org/semantic-release.json'),
     axios.get('https://json.schemastore.org/prettierrc.json'),
-    axios.get('https://json.schemastore.org/tsconfig')
+    axios.get('https://json.schemastore.org/tsconfig'),
+    axios.get('https://json.schemastore.org/github-workflow.json'),
+    axios.get('https://json.schemastore.org/stylelintrc.json')
   ])
 
   v.addSchema(packageJsonSchema, 'https://json.schemastore.org/package.json')
@@ -48,6 +52,9 @@ const getValidator = async () => {
   v.addSchema(semanticReleaseSchema, 'https://json.schemastore.org/semantic-release.json')
   v.addSchema(prettierSchema, 'https://json.schemastore.org/prettierrc.json')
   v.addSchema(tsconfigSchema, 'https://json.schemastore.org/tsconfig')
+  v.addSchema(workflowSchema, 'https://json.schemastore.org/github-workflow.json')
+  v.addSchema(stylelintSchema, 'https://json.schemastore.org/stylelintrc.json')
+
   validator = v
   return v
 }
@@ -76,3 +83,6 @@ export const validateTsconfigJson = async (data: unknown): Promise<Array<Message
 
 export const validateEslint = async (data: unknown): Promise<Array<Message>> =>
   validateSchema(data, 'https://json.schemastore.org/eslintrc.json')
+
+export const validateWorkflow = async (data: unknown): Promise<Array<Message>> =>
+  validateSchema(data, 'https://json.schemastore.org/github-workflow.json')
