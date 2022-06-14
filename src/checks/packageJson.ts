@@ -7,7 +7,8 @@ import { validatePackageJson } from '../helpers/validateSchema'
 import { Checker, Level, Message } from '../types'
 import glob from '../utils/glob'
 
-const analyze = async (content: string): Promise<Array<Message>> => {
+const analyze = async (file: string): Promise<Array<Message>> => {
+  const content = await fs.readFile(file, 'utf-8')
   const errors: Array<Message> = []
 
   // first, make sure that content is valid JSON
@@ -18,7 +19,8 @@ const analyze = async (content: string): Promise<Array<Message>> => {
     return [
       {
         level: Level.ERROR,
-        message: 'Not valid JSON'
+        message: 'Not valid JSON',
+        file
       }
     ]
   }
@@ -96,10 +98,17 @@ const analyze = async (content: string): Promise<Array<Message>> => {
     })
   }
 
-  // TODO check if resolutions are forced
-  // TODO run npm-check-updates
+  // subjective: CRA -> Vite
+  const usesCra = Object.values(data.scripts ?? {}).some((s: any) => s.includes('react-scripts'))
+  if (usesCra) {
+    errors.push({
+      level: Level.INFO,
+      message:
+        'It seems like Create-React-App is used. Maybe check out Vite for better performance and way less dependencies (see https://vitejs.dev/).'
+    })
+  }
 
-  return errors
+  return errors.map((e) => ({ ...e, file }))
 }
 
 const packageJsonChecker: Checker = async () => {
@@ -108,13 +117,7 @@ const packageJsonChecker: Checker = async () => {
   })) as Array<string>
 
   // for each file, analyze
-  const errorMatrix = await Promise.all(
-    results.map(async (file) => {
-      const content = await fs.readFile(file, 'utf-8')
-      const errors = await analyze(content)
-      return errors.map((error) => ({ ...error, file }))
-    })
-  )
+  const errorMatrix = await Promise.all(results.map((file) => analyze(file)))
 
   // flatten errors
   return errorMatrix.flat()
