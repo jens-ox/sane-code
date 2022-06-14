@@ -45,12 +45,6 @@ export async function main() {
     }
     console.log('\n')
   }
-
-  // TODO check if pre-commit checks are set up
-  // TODO check if GitHub on-push workflow is set up
-  // TODO check if codeowners is set up
-  // TODO check if license (and package.json license field) is set up
-  // TODO check if README is set up (and contains something other than the default CRA README)
 }
 
 main()

@@ -24,6 +24,24 @@ const analyze = async (path: string): Promise<Array<Message>> => {
   // validate against schema
   const jsonErrors = await validateWorkflow(parsedContent)
 
+  // check if external actions are commit-locked
+  const uses: Array<string> = Object.values(parsedContent.jobs ?? {})
+    .flatMap((e: any) => e.steps ?? [])
+    .map((s) => s.uses ?? null)
+    .filter((u) => u !== null)
+
+  const forbiddenUses = uses
+    .filter((u) => !u.startsWith('actions/')) // allow official GitHub Actions actions
+    .filter((u) => !/@[0-9a-f]{40}$/.test(u))
+
+  errors.push(
+    ...forbiddenUses.map((u) => ({
+      level: Level.WARN,
+      message: `You should commit-lock the external action "${u}" (see https://julienrenaux.fr/2019/12/20/github-actions-security-risk/)`,
+      file: path
+    }))
+  )
+
   return [...errors, ...jsonErrors.map((e) => ({ ...e, file: path }))]
 }
 
