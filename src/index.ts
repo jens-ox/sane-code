@@ -3,6 +3,7 @@ import eslintChecker from './checks/eslint'
 import lockfileChecker from './checks/lockfiles'
 import packageJsonChecker from './checks/packageJson'
 import tsconfigChecker from './checks/tsconfig'
+import typescriptChecker from './checks/typescript'
 import workflowChecker from './checks/workflows'
 import { Level, Message } from './types'
 
@@ -17,13 +18,14 @@ const printMessage = (message: Message): string => {
   }
 }
 
-export async function main() {
+async function main() {
   const problems = [
     ...(await packageJsonChecker()),
     ...(await lockfileChecker()),
     ...(await tsconfigChecker()),
     ...(await eslintChecker()),
-    ...(await workflowChecker())
+    ...(await workflowChecker()),
+    ...(await typescriptChecker())
   ]
 
   // group problems by file

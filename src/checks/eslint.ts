@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 import { join } from 'path'
+import json5 from 'json5'
 import YAML from 'yaml'
 import { validateEslint } from '../helpers/validateSchema'
 import { Checker, Level, Message } from '../types'
@@ -26,7 +27,7 @@ const eslintChecker: Checker = async () => {
           const contentString = await fs.readFile(path, 'utf-8')
           let content
           try {
-            content = JSON.parse(contentString)
+            content = json5.parse(contentString)
           } catch (error) {
             throw new Error(`${path}: no valid JSON`)
           }
@@ -65,7 +66,7 @@ const eslintChecker: Checker = async () => {
 
         // try to read it as JSON
         try {
-          data = JSON.parse(content)
+          data = json5.parse(content)
         } catch (error) {
           errors.push({
             level: Level.ERROR,
