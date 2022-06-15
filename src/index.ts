@@ -18,7 +18,7 @@ const printMessage = (message: Message): string => {
   }
 }
 
-export async function main() {
+async function main() {
   const problems = [
     ...(await packageJsonChecker()),
     ...(await lockfileChecker()),

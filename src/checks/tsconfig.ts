@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import json5 from 'json5'
 import { validateTsconfigJson } from '../helpers/validateSchema'
 import { Checker, Level, Message } from '../types'
 import glob from '../utils/glob'
@@ -9,7 +10,7 @@ const analyze = async (content: string): Promise<Array<Message>> => {
   // first, make sure that content is valid JSON
   let data
   try {
-    data = JSON.parse(content)
+    data = json5.parse(content)
   } catch (error) {
     return [
       {

@@ -1,6 +1,7 @@
 import { Project, SourceFile } from 'ts-morph'
 import { Checker, Level, Message } from '../types'
 import glob from '../utils/glob'
+import { analyze } from '../utils/importAnalysis'
 
 /**
  * Checks if a source file contains at least one class-based React component.
@@ -32,7 +33,9 @@ const analyzeFile = async (file: SourceFile): Promise<Array<Message>> => {
       file: path
     })
   }
-  return errors
+
+  const deadCode = analyze(file).map((e) => ({ ...e, file: path }))
+  return [...errors, ...deadCode]
 }
 
 const analyzeProject = async (project: Project): Promise<Array<Message>> => {
