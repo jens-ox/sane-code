@@ -10,6 +10,8 @@ Run `npx sane-code` in your repo to check for things like
 - whether or not the project depends on deprecated packages
 - best practices like no hard-pins of dependencies, test script set up
 - recommendations like enabling `esModuleInterop` in `tsconfig.json` etc
+- unused TypeScript exports
+- unused TypeScript symbols
 
 Feel free to open issues if you have suggestions for more checks :relaxed:
 
