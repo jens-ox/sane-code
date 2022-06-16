@@ -1,10 +1,9 @@
 import fs from 'fs/promises'
 import json5 from 'json5'
-import { validateTsconfigJson } from '../helpers/validateSchema'
-import { Checker, Level, Message } from '../types'
+import { Checker, Level, Message, ValidatorMethod } from '../types'
 import glob from '../utils/glob'
 
-const analyze = async (content: string): Promise<Array<Message>> => {
+const analyze = async (content: string, validator: Record<string, ValidatorMethod>): Promise<Array<Message>> => {
   const errors: Array<Message> = []
 
   // first, make sure that content is valid JSON
@@ -21,7 +20,7 @@ const analyze = async (content: string): Promise<Array<Message>> => {
   }
 
   // validate against tsconfig.json schema
-  const jsonResult = await validateTsconfigJson(data)
+  const jsonResult = await validator.tsconfig(data)
   errors.push(...jsonResult)
 
   // check for recommended tsconfig fields
@@ -45,7 +44,7 @@ const analyze = async (content: string): Promise<Array<Message>> => {
   return errors
 }
 
-const tsconfigChecker: Checker = async () => {
+const tsconfigChecker: Checker = async (validator) => {
   const errors: Array<Message> = []
   const tsconfigFiles = await glob('./**/tsconfig.json', { ignore: './**/node_modules/**/*' })
 
@@ -61,7 +60,7 @@ const tsconfigChecker: Checker = async () => {
   const errorMatrix = await Promise.all(
     tsconfigFiles.map(async (file) => {
       const content = await fs.readFile(file, 'utf-8')
-      const errors = await analyze(content)
+      const errors = await analyze(content, validator)
       return errors.map((error) => ({ ...error, file }))
     })
   )

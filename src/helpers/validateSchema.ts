@@ -1,8 +1,6 @@
 import { PreValidatePropertyFunction, Validator } from 'jsonschema'
 import axios from 'axios'
-import { Level, Message } from '../types'
-
-let validator: Validator
+import { Level, Message, ValidatorMethod } from '../types'
 
 const makePreValidator =
   (feedback: (message: Message) => void): PreValidatePropertyFunction =>
@@ -21,9 +19,7 @@ const makePreValidator =
       })
   }
 
-const getValidator = async () => {
-  if (validator) return validator
-
+export const getValidator = async (): Promise<Record<string, ValidatorMethod>> => {
   const v = new Validator()
 
   console.log('downloading JSON schemas from Schemastore...')
@@ -59,34 +55,34 @@ const getValidator = async () => {
   v.addSchema(workflowSchema, 'https://json.schemastore.org/github-workflow.json')
   v.addSchema(stylelintSchema, 'https://json.schemastore.org/stylelintrc.json')
 
-  validator = v
-  return v
+  const validateSchema = async (data: unknown, schema: string): Promise<Array<Message>> => {
+    const unnecessaryDefaults: Array<Message> = []
+    const result = v.validate(
+      data,
+      {
+        $ref: schema
+      },
+      {
+        preValidateProperty: makePreValidator((defaultsMessage) => unnecessaryDefaults.push(defaultsMessage))
+      }
+    )
+
+    return [...result.errors.map((e) => ({ level: Level.ERROR, message: e.stack })), ...unnecessaryDefaults]
+  }
+
+  const packageJson: ValidatorMethod = async (data) => validateSchema(data, 'https://json.schemastore.org/package.json')
+
+  const tsconfig: ValidatorMethod = async (data) => validateSchema(data, 'https://json.schemastore.org/tsconfig')
+
+  const eslint: ValidatorMethod = async (data) => validateSchema(data, 'https://json.schemastore.org/eslintrc.json')
+
+  const workflow: ValidatorMethod = async (data) =>
+    validateSchema(data, 'https://json.schemastore.org/github-workflow.json')
+
+  return {
+    packageJson,
+    tsconfig,
+    eslint,
+    workflow
+  }
 }
-
-const validateSchema = async (data: unknown, schema: string): Promise<Array<Message>> => {
-  const v = await getValidator()
-  const unnecessaryDefaults: Array<Message> = []
-  const result = v.validate(
-    data,
-    {
-      $ref: schema
-    },
-    {
-      preValidateProperty: makePreValidator((defaultsMessage) => unnecessaryDefaults.push(defaultsMessage))
-    }
-  )
-
-  return [...result.errors.map((e) => ({ level: Level.ERROR, message: e.stack })), ...unnecessaryDefaults]
-}
-
-export const validatePackageJson = async (data: unknown): Promise<Array<Message>> =>
-  validateSchema(data, 'https://json.schemastore.org/package.json')
-
-export const validateTsconfigJson = async (data: unknown): Promise<Array<Message>> =>
-  validateSchema(data, 'https://json.schemastore.org/tsconfig')
-
-export const validateEslint = async (data: unknown): Promise<Array<Message>> =>
-  validateSchema(data, 'https://json.schemastore.org/eslintrc.json')
-
-export const validateWorkflow = async (data: unknown): Promise<Array<Message>> =>
-  validateSchema(data, 'https://json.schemastore.org/github-workflow.json')

@@ -3,11 +3,10 @@
  */
 
 import fs from 'fs/promises'
-import { validatePackageJson } from '../helpers/validateSchema'
-import { Checker, Level, Message } from '../types'
+import { Checker, Level, Message, ValidatorMethod } from '../types'
 import glob from '../utils/glob'
 
-const analyze = async (file: string): Promise<Array<Message>> => {
+const analyze = async (file: string, validator: Record<string, ValidatorMethod>): Promise<Array<Message>> => {
   const content = await fs.readFile(file, 'utf-8')
   const errors: Array<Message> = []
 
@@ -26,7 +25,7 @@ const analyze = async (file: string): Promise<Array<Message>> => {
   }
 
   // validate against package.json schema
-  const jsonResult = await validatePackageJson(data)
+  const jsonResult = await validator.packageJson(data)
   errors.push(...jsonResult)
 
   // check fields
@@ -121,13 +120,13 @@ const analyze = async (file: string): Promise<Array<Message>> => {
   return errors.map((e) => ({ ...e, file }))
 }
 
-const packageJsonChecker: Checker = async () => {
+const packageJsonChecker: Checker = async (validator) => {
   const results = (await glob('./**/package.json', {
     ignore: './**/node_modules/**/*'
   })) as Array<string>
 
   // for each file, analyze
-  const errorMatrix = await Promise.all(results.map((file) => analyze(file)))
+  const errorMatrix = await Promise.all(results.map((file) => analyze(file, validator)))
 
   // flatten errors
   return errorMatrix.flat()

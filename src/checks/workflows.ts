@@ -1,10 +1,9 @@
 import fs from 'fs/promises'
 import YAML from 'yaml'
-import { validateWorkflow } from '../helpers/validateSchema'
-import { Checker, Level, Message } from '../types'
+import { Checker, Level, Message, ValidatorMethod } from '../types'
 import glob from '../utils/glob'
 
-const analyze = async (path: string): Promise<Array<Message>> => {
+const analyze = async (path: string, validator: Record<string, ValidatorMethod>): Promise<Array<Message>> => {
   const errors: Array<Message> = []
 
   const content = await fs.readFile(path, 'utf-8')
@@ -22,7 +21,7 @@ const analyze = async (path: string): Promise<Array<Message>> => {
   }
 
   // validate against schema
-  const jsonErrors = await validateWorkflow(parsedContent)
+  const jsonErrors = await validator.workflow(parsedContent)
 
   // check if external actions are commit-locked
   const uses: Array<string> = Object.values(parsedContent.jobs ?? {})
@@ -45,7 +44,7 @@ const analyze = async (path: string): Promise<Array<Message>> => {
   return [...errors, ...jsonErrors.map((e) => ({ ...e, file: path }))]
 }
 
-const workflowChecker: Checker = async () => {
+const workflowChecker: Checker = async (validator) => {
   const errors: Array<Message> = []
   const workflows = await glob('./.github/workflows/*.yml', {
     ignore: './**/node_modules/**/*'
@@ -60,7 +59,7 @@ const workflowChecker: Checker = async () => {
     })
 
   // parse each workflow file
-  const errorMatrix = await Promise.all(workflows.map((w) => analyze(w)))
+  const errorMatrix = await Promise.all(workflows.map((w) => analyze(w, validator)))
 
   return [...errors, ...errorMatrix.flat()]
 }

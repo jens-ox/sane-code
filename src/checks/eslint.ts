@@ -2,11 +2,10 @@ import fs from 'fs/promises'
 import { join } from 'path'
 import json5 from 'json5'
 import YAML from 'yaml'
-import { validateEslint } from '../helpers/validateSchema'
 import { Checker, Level, Message } from '../types'
 import glob from '../utils/glob'
 
-const eslintChecker: Checker = async () => {
+const eslintChecker: Checker = async (validator) => {
   const errors: Array<Message> = []
 
   // load all package.json files
@@ -90,7 +89,7 @@ const eslintChecker: Checker = async () => {
       }
 
       // validate content against eslint schema
-      const jsonErrors = await validateEslint(data)
+      const jsonErrors = await validator.eslint(data)
       return jsonErrors.map((e) => ({ ...e, file: path }))
     })
   )

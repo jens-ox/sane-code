@@ -11,5 +11,9 @@ export interface Message {
 }
 
 export interface Checker {
-  (): Promise<Array<Message>>
+  (validator: Record<string, ValidatorMethod>): Promise<Array<Message>>
+}
+
+export interface ValidatorMethod {
+  (data: unknown): Promise<Array<Message>>
 }

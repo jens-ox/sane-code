@@ -5,6 +5,7 @@ import packageJsonChecker from './checks/packageJson'
 import tsconfigChecker from './checks/tsconfig'
 import typescriptChecker from './checks/typescript'
 import workflowChecker from './checks/workflows'
+import { getValidator } from './helpers/validateSchema'
 import { Level, Message } from './types'
 
 const printMessage = (message: Message): string => {
@@ -19,13 +20,15 @@ const printMessage = (message: Message): string => {
 }
 
 async function main() {
+  // initialize schema validator
+  const validator = await getValidator()
   const problems = [
-    ...(await packageJsonChecker()),
-    ...(await lockfileChecker()),
-    ...(await tsconfigChecker()),
-    ...(await eslintChecker()),
-    ...(await workflowChecker()),
-    ...(await typescriptChecker())
+    ...(await packageJsonChecker(validator)),
+    ...(await lockfileChecker(validator)),
+    ...(await tsconfigChecker(validator)),
+    ...(await eslintChecker(validator)),
+    ...(await workflowChecker(validator)),
+    ...(await typescriptChecker(validator))
   ]
 
   // group problems by file
