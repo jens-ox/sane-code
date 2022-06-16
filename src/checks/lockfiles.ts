@@ -63,7 +63,6 @@ const lockfileChecker: Checker = async () => {
   if (yarnLockfiles.length > 0) {
     // if more than one yarn lockfile exists, suggest monorepo
     if (yarnLockfiles.length > 1) {
-      console.log(yarnLockfiles)
       errors.push({
         level: Level.WARN,
         message:
