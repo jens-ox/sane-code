@@ -26,6 +26,8 @@ const getValidator = async () => {
 
   const v = new Validator()
 
+  console.log('downloading JSON schemas from Schemastore...')
+
   const [
     { data: packageJsonSchema },
     { data: eslintSchema },
@@ -45,6 +47,8 @@ const getValidator = async () => {
     axios.get('https://json.schemastore.org/github-workflow.json'),
     axios.get('https://json.schemastore.org/stylelintrc.json')
   ])
+
+  console.log('schemas downloaded')
 
   v.addSchema(packageJsonSchema, 'https://json.schemastore.org/package.json')
   v.addSchema(eslintSchema, 'https://json.schemastore.org/eslintrc.json')

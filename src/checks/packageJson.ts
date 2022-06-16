@@ -78,7 +78,7 @@ const analyze = async (file: string): Promise<Array<Message>> => {
   }
 
   // check if test command has been set up
-  const hasTestScript = Object.keys(data.scripts).includes('test')
+  const hasTestScript = Object.keys(data.scripts ?? {}).includes('test')
   if (!hasTestScript) {
     errors.push({
       level: Level.WARN,
