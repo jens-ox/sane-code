@@ -24,21 +24,21 @@ const analyze = async (content: string, validator: Record<string, ValidatorMetho
   errors.push(...jsonResult)
 
   // check for recommended tsconfig fields
-  if (typeof data.compilerOptions.exactOptionalPropertyTypes === 'undefined')
+  if (typeof data?.compilerOptions?.exactOptionalPropertyTypes === 'undefined')
     errors.push({
       level: Level.WARN,
       message: 'compilerOptions.exactOptionalPropertyTypes is not set, which is recommended.'
     })
-  if (typeof data.compilerOptions.strict === 'undefined')
+  if (typeof data?.compilerOptions?.strict === 'undefined')
     errors.push({ level: Level.WARN, message: 'compilerOptions.strict is not set, which is recommended.' })
-  if (typeof data.compilerOptions.esModuleInterop === 'undefined')
+  if (typeof data?.compilerOptions?.esModuleInterop === 'undefined')
     errors.push({ level: Level.WARN, message: 'compilerOptions.esModuleInterop is not set, which is recommended.' })
-  if (typeof data.compilerOptions.forceConsistentCasingInFileNames === 'undefined')
+  if (typeof data?.compilerOptions?.forceConsistentCasingInFileNames === 'undefined')
     errors.push({
       level: Level.WARN,
       message: 'compilerOptions.forceConsistentCasingInFileNames is not set, which is recommended.'
     })
-  if (typeof data.compilerOptions.skipLibCheck === 'undefined')
+  if (typeof data?.compilerOptions?.skipLibCheck === 'undefined')
     errors.push({ level: Level.WARN, message: 'compilerOptions.skipLibCheck is not set, which is recommended.' })
 
   return errors
