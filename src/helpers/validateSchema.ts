@@ -32,7 +32,8 @@ export const getValidator = async (): Promise<Record<string, ValidatorMethod>> =
     { data: prettierSchema },
     { data: tsconfigSchema },
     { data: workflowSchema },
-    { data: stylelintSchema }
+    { data: stylelintSchema },
+    { data: jscpdSchema }
   ] = await Promise.all([
     axios.get('https://json.schemastore.org/package.json'),
     axios.get('https://json.schemastore.org/eslintrc.json'),
@@ -41,11 +42,13 @@ export const getValidator = async (): Promise<Record<string, ValidatorMethod>> =
     axios.get('https://json.schemastore.org/prettierrc.json'),
     axios.get('https://json.schemastore.org/tsconfig'),
     axios.get('https://json.schemastore.org/github-workflow.json'),
-    axios.get('https://json.schemastore.org/stylelintrc.json')
+    axios.get('https://json.schemastore.org/stylelintrc.json'),
+    axios.get('https://json.schemastore.org/jscpd.json')
   ])
 
   console.log('schemas downloaded')
 
+  v.addSchema(jscpdSchema, 'https://json.schemastore.org/jscpd.json')
   v.addSchema(packageJsonSchema, 'https://json.schemastore.org/package.json')
   v.addSchema(eslintSchema, 'https://json.schemastore.org/eslintrc.json')
   v.addSchema(avaSchema, 'https://json.schemastore.org/ava.json')
