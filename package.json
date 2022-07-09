@@ -23,7 +23,6 @@
   "license": "MIT",
   "homepage": "https://github.com/jens-ox/sane-code#readme",
   "dependencies": {
-    "axios": "^0.27.2",
     "chalk": "^4.1.2",
     "glob": "^8.0.3",
     "json5": "^2.2.1",

@@ -1,6 +1,15 @@
 import { PreValidatePropertyFunction, Validator } from 'jsonschema'
-import axios from 'axios'
 import { Level, Message, ValidatorMethod } from '../types'
+
+import jscpdSchema from '../schemas/jscpd.json'
+import packageJsonSchema from '../schemas/package.json'
+import eslintSchema from '../schemas/eslint.json'
+import avaSchema from '../schemas/ava.json'
+import semanticReleaseSchema from '../schemas/semanticRelease.json'
+import prettierSchema from '../schemas/prettier.json'
+import tsconfigSchema from '../schemas/tsconfigJson.json'
+import workflowSchema from '../schemas/githubWorkflow.json'
+import stylelintSchema from '../schemas/stylelint.json'
 
 const makePreValidator =
   (feedback: (message: Message) => void): PreValidatePropertyFunction =>
@@ -21,32 +30,6 @@ const makePreValidator =
 
 export const getValidator = async (): Promise<Record<string, ValidatorMethod>> => {
   const v = new Validator()
-
-  console.log('downloading JSON schemas from Schemastore...')
-
-  const [
-    { data: packageJsonSchema },
-    { data: eslintSchema },
-    { data: avaSchema },
-    { data: semanticReleaseSchema },
-    { data: prettierSchema },
-    { data: tsconfigSchema },
-    { data: workflowSchema },
-    { data: stylelintSchema },
-    { data: jscpdSchema }
-  ] = await Promise.all([
-    axios.get('https://json.schemastore.org/package.json'),
-    axios.get('https://json.schemastore.org/eslintrc.json'),
-    axios.get('https://json.schemastore.org/ava.json'),
-    axios.get('https://json.schemastore.org/semantic-release.json'),
-    axios.get('https://json.schemastore.org/prettierrc.json'),
-    axios.get('https://json.schemastore.org/tsconfig'),
-    axios.get('https://json.schemastore.org/github-workflow.json'),
-    axios.get('https://json.schemastore.org/stylelintrc.json'),
-    axios.get('https://json.schemastore.org/jscpd.json')
-  ])
-
-  console.log('schemas downloaded')
 
   v.addSchema(jscpdSchema, 'https://json.schemastore.org/jscpd.json')
   v.addSchema(packageJsonSchema, 'https://json.schemastore.org/package.json')
